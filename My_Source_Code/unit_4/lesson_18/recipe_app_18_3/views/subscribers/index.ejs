@@ -1,0 +1,38 @@
+<h2>Subscribers Table</h2>
+<!-- Heading for the table -->
+<table class="table">
+  <!-- Table element with the 'table' class -->
+  <thead>
+    <!-- Table header section -->
+    <tr>
+      <!-- Table row for column headings -->
+      <th>Name</th>
+      <!-- Table header cell for the 'Name' column -->
+      <th>Email</th>
+      <!-- Table header cell for the 'Email' column -->
+    </tr>
+    <!-- End of table row for column headings -->
+  </thead>
+  <!-- End of table header section -->
+  <tbody>
+    <!-- Table body section -->
+    <% subscribers.forEach(subscriber => { %>
+    <!-- Loop through each subscriber in the 'subscribers' array -->
+    <tr>
+      <!-- Table row for each subscriber -->
+      <td>
+        <%= subscriber.name %>
+      </td>
+      <!-- Table cell for the subscriber's name -->
+      <td>
+        <%= subscriber.email %>
+      </td>
+      <!-- Table cell for the subscriber's email -->
+    </tr>
+    <!-- End of table row for each subscriber -->
+    <% }); %>
+    <!-- End of loop -->
+  </tbody>
+  <!-- End of table body section -->
+</table>
+<!-- End of table -->

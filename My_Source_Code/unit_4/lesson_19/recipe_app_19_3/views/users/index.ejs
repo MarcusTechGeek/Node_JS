@@ -1,0 +1,28 @@
+<h2>Users Table</h2> <!-- Heading for the table -->
+
+<table class="table"> <!-- Start of the table -->
+  <thead>
+    <tr>
+      <th>Name</th> <!-- Table header for the user's name -->
+      <th>Email</th> <!-- Table header for the user's email -->
+      <th>Zip Code</th> <!-- Table header for the user's zip code -->
+    </tr>
+  </thead>
+  <tbody>
+    <% users.forEach(user => { %> <!-- Loop through each user in the users array -->
+    <tr>
+      <td>
+        <a href="<%= `/users/${user._id}` %>">
+          <%= user.fullName %> <!-- Link to the user's details page -->
+        </a>
+      </td>
+      <td>
+        <%= user.email %> <!-- Display the user's email -->
+      </td>
+      <td>
+        <%= user.zipCode %> <!-- Display the user's zip code -->
+      </td>
+    </tr>
+    <% }); %>
+  </tbody>
+</table>
