@@ -1,8 +1,9 @@
 "use strict";
 
-const router = require("express").Router(),
-  usersController = require("../controllers/usersController");
+const router = require("express").Router(), // Importing the Router class from the 'express' library
+  usersController = require("../controllers/usersController"); // Importing the usersController module
 
+// Setting up various routes and associating them with corresponding controller methods
 router.get("/", usersController.index, usersController.indexView);
 router.get("/new", usersController.new);
 router.post(
@@ -19,4 +20,4 @@ router.put("/:id/update", usersController.update, usersController.redirectView);
 router.get("/:id", usersController.show, usersController.showView);
 router.delete("/:id/delete", usersController.delete, usersController.redirectView);
 
-module.exports = router;
+module.exports = router; // Exporting the router for use in other modules

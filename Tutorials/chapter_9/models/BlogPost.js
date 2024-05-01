@@ -12,5 +12,19 @@ const BlogPostSchema = new Schema({
     image: String
 });
 
+// const BlogPostSchema = new Schema({
+//     title: String,
+//     body: String,
+//     username:{
+//         type:   string,
+//         default:'Marcus Gouws'
+//     },
+//     datePosted: {
+//         type: Date,
+//         default: new Date()
+//     },
+//     image: String
+// });
+
 const BlogPost = mongoose.model('BlogPost', BlogPostSchema);
 module.exports = BlogPost;

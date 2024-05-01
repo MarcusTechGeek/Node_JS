@@ -1,19 +1,23 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+// Importing required modules
+const mongoose = require('mongoose'); // Mongoose for MongoDB object modeling
+const Schema = mongoose.Schema; // Mongoose schema constructor
 
+// Defining a Mongoose schema for a blog post
 const BlogPostSchema = new Schema({
-    title: String,
-    body: String,
-    username: {
+    title: String, // Field for the title of the blog post
+    body: String, // Field for the body/content of the blog post
+    username: { // Field for the username of the author with a default value
         type: String,
-        default: 'Pierre Jonker'
+        default: 'Marcus Gouws' // Default username
     },
-    datePosted: {
-        /* Can declare property type with an object like this because we need 'default' */
+    datePosted: { // Field for the date the post was created with a default value
         type: Date,
-        default: new Date()
+        default: new Date() // Default date is set to the current date
     }
 });
 
+// Creating a Mongoose model based on the schema
 const BlogPost = mongoose.model('BlogPost', BlogPostSchema);
+
+// Exporting the BlogPost model to be used in other files
 module.exports = BlogPost;

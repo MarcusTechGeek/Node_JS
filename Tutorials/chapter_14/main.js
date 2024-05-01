@@ -14,6 +14,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const BlogPost = require('./models/BlogPost');
+const User = require('./models/User'); // Import the User model
 const fileUpload = require('express-fileupload');
 
 const app = express();
@@ -54,8 +55,21 @@ app.listen(PORT, () => {
 
 app.get('/', async (req, res) => {
     const blogposts = await BlogPost.find({});
+    const blogsWithUsernames = await Promise.all(blogposts.map(async (blogpost) => {
+        let username = 'Unknown Author';
+        if (blogpost.userid) {
+            const user = await User.findById(blogpost.userid);
+            if (user) {
+                username = user.username;
+            }
+        }
+        return {
+            ...blogpost._doc,
+            username: username
+        };
+    }));
     res.render('index', {
-        blogposts: blogposts
+        blogposts: blogsWithUsernames
     });
 });
 
@@ -72,9 +86,17 @@ app.get('/samplepost', (req, res) => {
 });
 
 app.get('/post/:id', async (req, res) => {
-    const blogpost = await BlogPost.findById(req.params.id)
+    const blogpost = await BlogPost.findById(req.params.id);
+    let username = 'Unknown Author';
+    if (blogpost.userid) {
+        const user = await User.findById(blogpost.userid);
+        if (user) {
+            username = user.username;
+        }
+    }
     res.render('post', {
-        blogpost: blogpost
+        blogpost: blogpost,
+        username: username
     });
 });
 
@@ -115,14 +137,6 @@ app.get('/auth/register', redirectIfAuthenticatedMiddleware, newUserController);
 app.post('/users/register', redirectIfAuthenticatedMiddleware, storeUserController);
 app.get('/auth/login', redirectIfAuthenticatedMiddleware, loginController);
 app.post('/users/login', redirectIfAuthenticatedMiddleware, loginUserController);
-
-// The below routes seem to be duplicated, so you can remove them.
-// app.get('/posts/new', authMiddleware, newPostController);
-// app.post('/posts/store', authMiddleware, storePostController);
-// app.get('/auth/register', redirectIfAuthenticatedMiddleware, newUserController);
-// app.post('/users/register', redirectIfAuthenticatedMiddleware, storeUserController);
-// app.get('/auth/login', redirectIfAuthenticatedMiddleware, loginController);
-// app.post('/users/login', redirectIfAuthenticatedMiddleware, loginUserController);
 
 app.get('/auth/logout', logoutController);
 app.use((req, res) => res.render('notfound'));

@@ -1,9 +1,11 @@
 "use strict";
 
-const User = require("../models/user"),
-  passport = require("passport"),
+// Import required modules
+const User = require("../models/user"), // Import User model
+  passport = require("passport"), // Import Passport for authentication
   getUserParams = body => {
     return {
+      // Function to extract user parameters from request body
       name: {
         first: body.first,
         last: body.last
@@ -14,7 +16,9 @@ const User = require("../models/user"),
     };
   };
 
+// Export controller methods
 module.exports = {
+  // Controller method to fetch all users
   index: (req, res, next) => {
     User.find()
       .then(users => {
@@ -26,32 +30,40 @@ module.exports = {
         next(error);
       });
   },
+  // Controller method to render index view
   indexView: (req, res) => {
     res.render("users/index");
   },
+  // Controller method to render new user form
   new: (req, res) => {
     res.render("users/new");
   },
+  // Controller method to create a new user
   create: (req, res, next) => {
     if (req.skip) next();
     let newUser = new User(getUserParams(req.body));
+    // Register the new user using Passport
     User.register(newUser, req.body.password, (error, user) => {
       if (user) {
+        // If registration successful, flash success message and redirect
         req.flash("success", `${user.fullName}'s account created successfully!`);
         res.locals.redirect = "/users";
         next();
       } else {
+        // If registration failed, flash error message and redirect to new user form
         req.flash("error", `Failed to create user account because: ${error.message}.`);
         res.locals.redirect = "/users/new";
         next();
       }
     });
   },
+  // Controller method to redirect to specified path
   redirectView: (req, res, next) => {
     let redirectPath = res.locals.redirect;
     if (redirectPath) res.redirect(redirectPath);
     else next();
   },
+  // Controller method to fetch user by ID
   show: (req, res, next) => {
     let userId = req.params.id;
     User.findById(userId)
@@ -64,9 +76,11 @@ module.exports = {
         next(error);
       });
   },
+  // Controller method to render user profile view
   showView: (req, res) => {
     res.render("users/show");
   },
+  // Controller method to render user edit form
   edit: (req, res, next) => {
     let userId = req.params.id;
     User.findById(userId)
@@ -80,6 +94,7 @@ module.exports = {
         next(error);
       });
   },
+  // Controller method to update user information
   update: (req, res, next) => {
     let userId = req.params.id,
       userParams = {
@@ -104,6 +119,7 @@ module.exports = {
         next(error);
       });
   },
+  // Controller method to delete user
   delete: (req, res, next) => {
     let userId = req.params.id;
     User.findByIdAndRemove(userId)
@@ -116,15 +132,18 @@ module.exports = {
         next();
       });
   },
+  // Controller method to render login form
   login: (req, res) => {
     res.render("users/login");
   },
+  // Controller method to authenticate user login
   authenticate: passport.authenticate("local", {
     failureRedirect: "/users/login",
     failureFlash: "Failed to login.",
     successRedirect: "/",
     successFlash: "Logged in!"
   }),
+  // Controller method to validate user input
   validate: (req, res, next) => {
     req
       .sanitizeBody("email")
@@ -156,6 +175,7 @@ module.exports = {
       }
     });
   },
+  // Controller method to log out user
   logout: (req, res, next) => {
     req.logout();
     req.flash("success", "You have been logged out!");

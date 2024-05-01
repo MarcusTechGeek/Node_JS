@@ -1,18 +1,19 @@
 "use strict";
 
-const router = require("express").Router(),
-  userRoutes = require("./userRoutes"),
-  subscriberRoutes = require("./subscriberRoutes"),
-  courseRoutes = require("./courseRoutes"),
-  errorRoutes = require("./errorRoutes"),
-  homeRoutes = require("./homeRoutes"),
-  apiRoutes = require("./apiRoutes");
+const router = require("express").Router(); // Importing Express Router
+const userRoutes = require("./userRoutes"); // Importing user routes
+const subscriberRoutes = require("./subscriberRoutes"); // Importing subscriber routes
+const courseRoutes = require("./courseRoutes"); // Importing course routes
+const errorRoutes = require("./errorRoutes"); // Importing error routes
+const homeRoutes = require("./homeRoutes"); // Importing home routes
+const apiRoutes = require("./apiRoutes"); // Importing API routes
 
-router.use("/api", apiRoutes);
-router.use("/users", userRoutes);
-router.use("/subscribers", subscriberRoutes);
-router.use("/courses", courseRoutes);
-router.use("/", homeRoutes);
-router.use("/", errorRoutes);
+// Define routes for different modules
+router.use("/api", apiRoutes); // Route for API endpoints
+router.use("/users", userRoutes); // Route for user management
+router.use("/subscribers", subscriberRoutes); // Route for subscriber management
+router.use("/courses", courseRoutes); // Route for course management
+router.use("/", homeRoutes); // Route for home page
+router.use("/", errorRoutes); // Route for error handling
 
-module.exports = router;
+module.exports = router; // Exporting the router

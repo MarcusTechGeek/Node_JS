@@ -1,18 +1,21 @@
 "use strict";
 
-const Course = require("../models/course"),
-  httpStatus = require("http-status-codes"),
-  User = require("../models/user"),
-  getCourseParams = body => {
-    return {
-      title: body.title,
-      description: body.description,
-      maxStudents: body.maxStudents,
-      cost: body.cost
-    };
+const Course = require("../models/course");
+const httpStatus = require("http-status-codes");
+const User = require("../models/user");
+
+// Function to extract course parameters from request body
+const getCourseParams = body => {
+  return {
+    title: body.title,
+    description: body.description,
+    maxStudents: body.maxStudents,
+    cost: body.cost
   };
+};
 
 module.exports = {
+  // Retrieves all courses
   index: (req, res, next) => {
     Course.find()
       .then(courses => {
@@ -20,18 +23,22 @@ module.exports = {
         next();
       })
       .catch(error => {
-        console.log(`Error fetching courses: ${error.message}`);
+        console.error(`Error fetching courses: ${error.message}`);
         next(error);
       });
   },
+
+  // Renders the index view
   indexView: (req, res) => {
     res.render("courses/index");
   },
 
+  // Renders the form for creating a new course
   new: (req, res) => {
     res.render("courses/new");
   },
 
+  // Creates a new course
   create: (req, res, next) => {
     let courseParams = getCourseParams(req.body);
     Course.create(courseParams)
@@ -41,17 +48,19 @@ module.exports = {
         next();
       })
       .catch(error => {
-        console.log(`Error saving course: ${error.message}`);
+        console.error(`Error saving course: ${error.message}`);
         next(error);
       });
   },
 
+  // Redirects to a specified path
   redirectView: (req, res, next) => {
     let redirectPath = res.locals.redirect;
     if (redirectPath !== undefined) res.redirect(redirectPath);
     else next();
   },
 
+  // Retrieves and renders a specific course
   show: (req, res, next) => {
     let courseId = req.params.id;
     Course.findById(courseId)
@@ -60,15 +69,17 @@ module.exports = {
         next();
       })
       .catch(error => {
-        console.log(`Error fetching course by ID: ${error.message}`);
+        console.error(`Error fetching course by ID: ${error.message}`);
         next(error);
       });
   },
 
+  // Renders the view for a specific course
   showView: (req, res) => {
     res.render("courses/show");
   },
 
+  // Renders the form for editing a specific course
   edit: (req, res, next) => {
     let courseId = req.params.id;
     Course.findById(courseId)
@@ -78,29 +89,29 @@ module.exports = {
         });
       })
       .catch(error => {
-        console.log(`Error fetching course by ID: ${error.message}`);
+        console.error(`Error fetching course by ID: ${error.message}`);
         next(error);
       });
   },
 
+  // Updates a specific course
   update: (req, res, next) => {
-    let courseId = req.params.id,
-      courseParams = getCourseParams(req.body);
+    let courseId = req.params.id;
+    let courseParams = getCourseParams(req.body);
 
-    Course.findByIdAndUpdate(courseId, {
-      $set: courseParams
-    })
+    Course.findByIdAndUpdate(courseId, { $set: courseParams })
       .then(course => {
         res.locals.redirect = `/courses/${courseId}`;
         res.locals.course = course;
         next();
       })
       .catch(error => {
-        console.log(`Error updating course by ID: ${error.message}`);
+        console.error(`Error updating course by ID: ${error.message}`);
         next(error);
       });
   },
 
+  // Deletes a specific course
   delete: (req, res, next) => {
     let courseId = req.params.id;
     Course.findByIdAndRemove(courseId)
@@ -109,16 +120,20 @@ module.exports = {
         next();
       })
       .catch(error => {
-        console.log(`Error deleting course by ID: ${error.message}`);
-        next();
+        console.error(`Error deleting course by ID: ${error.message}`);
+        next(error);
       });
   },
+
+  // Responds with JSON data
   respondJSON: (req, res) => {
     res.json({
       status: httpStatus.OK,
       data: res.locals
     });
   },
+
+  // Handles JSON errors
   errorJSON: (error, req, res, next) => {
     let errorObject;
     if (error) {
@@ -134,6 +149,8 @@ module.exports = {
     }
     res.json(errorObject);
   },
+
+  // Filters user courses
   filterUserCourses: (req, res, next) => {
     let currentUser = res.locals.currentUser;
     if (currentUser) {
@@ -149,9 +166,11 @@ module.exports = {
       next();
     }
   },
+
+  // Joins a course
   join: (req, res, next) => {
-    let courseId = req.params.id,
-      currentUser = req.user;
+    let courseId = req.params.id;
+    let currentUser = req.user;
     if (currentUser) {
       User.findByIdAndUpdate(currentUser, {
         $addToSet: {

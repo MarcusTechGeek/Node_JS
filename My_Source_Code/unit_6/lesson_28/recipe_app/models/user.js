@@ -1,14 +1,14 @@
 "use strict";
 
-const mongoose = require("mongoose"),
-  { Schema } = mongoose,
-  Subscriber = require("./subscriber"),
-  bcrypt = require("bcrypt"),
-  passportLocalMongoose = require("passport-local-mongoose"),
-  randToken = require("rand-token"),
-  userSchema = new Schema(
+const mongoose = require("mongoose"), // Importing mongoose library for MongoDB interactions
+  { Schema } = mongoose, // Destructuring Schema from mongoose
+  Subscriber = require("./subscriber"), // Importing Subscriber model
+  bcrypt = require("bcrypt"), // Importing bcrypt for password hashing
+  passportLocalMongoose = require("passport-local-mongoose"), // Importing passport-local-mongoose for authentication
+  randToken = require("rand-token"), // Importing rand-token for generating random tokens
+  userSchema = new Schema( // Defining user schema
     {
-      name: {
+      name: { // Sub-schema for name
         first: {
           type: String,
           trim: true
@@ -18,62 +18,53 @@ const mongoose = require("mongoose"),
           trim: true
         }
       },
-      email: {
+      email: { // Email field
         type: String,
         required: true,
         lowercase: true,
         unique: true
       },
-      // apiToken: {
-      //   type: String
-      // },
-      zipCode: {
+      zipCode: { // Zip code field
         type: Number,
         min: [1000, "Zip code too short"],
         max: 99999
       },
-      courses: [{ type: Schema.Types.ObjectId, ref: "Course" }],
-      subscribedAccount: {
+      courses: [{ type: Schema.Types.ObjectId, ref: "Course" }], // Reference to enrolled courses
+      subscribedAccount: { // Reference to subscribed account (Subscriber model)
         type: Schema.Types.ObjectId,
         ref: "Subscriber"
       }
     },
     {
-      timestamps: true
+      timestamps: true // Automatically add timestamps for createdAt and updatedAt
     }
   );
 
-userSchema.virtual("fullName").get(function() {
+userSchema.virtual("fullName").get(function() { // Virtual property to get full name
   return `${this.name.first} ${this.name.last}`;
 });
 
-userSchema.pre("save", function(next) {
+userSchema.pre("save", function(next) { // Pre-save hook to associate subscriber account if available
   let user = this;
-  if (user.subscribedAccount === undefined) {
-    Subscriber.findOne({
+  if (user.subscribedAccount === undefined) { // If subscriber account is not already associated
+    Subscriber.findOne({ // Find subscriber by email
       email: user.email
     })
       .then(subscriber => {
-        user.subscribedAccount = subscriber;
+        user.subscribedAccount = subscriber; // Associate subscriber account
         next();
       })
       .catch(error => {
-        console.log(`Error in connecting subscriber:${error.message}`);
+        console.log(`Error in connecting subscriber:${error.message}`); // Log error if subscriber not found
         next(error);
       });
   } else {
-    next();
+    next(); // Proceed if subscriber account already associated
   }
 });
 
-// userSchema.pre("save", function(next) {
-//   let user = this;
-//   if (!user.apiToken) user.apiToken = randToken.generate(16);
-//   next();
-// });
-
-userSchema.plugin(passportLocalMongoose, {
-  usernameField: "email"
+userSchema.plugin(passportLocalMongoose, { // Plugin for passport-local-mongoose
+  usernameField: "email" // Use email as the username field for authentication
 });
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("User", userSchema); // Exporting User model

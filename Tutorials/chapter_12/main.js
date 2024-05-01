@@ -116,13 +116,5 @@ app.post('/users/register', redirectIfAuthenticatedMiddleware, storeUserControll
 app.get('/auth/login', redirectIfAuthenticatedMiddleware, loginController);
 app.post('/users/login', redirectIfAuthenticatedMiddleware, loginUserController);
 
-// The below routes seem to be duplicated, so you can remove them.
-// app.get('/posts/new', authMiddleware, newPostController);
-// app.post('/posts/store', authMiddleware, storePostController);
-// app.get('/auth/register', redirectIfAuthenticatedMiddleware, newUserController);
-// app.post('/users/register', redirectIfAuthenticatedMiddleware, storeUserController);
-// app.get('/auth/login', redirectIfAuthenticatedMiddleware, loginController);
-// app.post('/users/login', redirectIfAuthenticatedMiddleware, loginUserController);
-
 app.get('/auth/logout', logoutController);
 app.use((req, res) => res.render('notfound'));

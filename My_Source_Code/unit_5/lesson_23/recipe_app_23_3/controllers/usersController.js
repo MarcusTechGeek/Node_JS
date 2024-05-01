@@ -1,6 +1,8 @@
 "use strict";
 
+// Import required modules
 const User = require("../models/user"),
+  // Function to extract user parameters from request body
   getUserParams = body => {
     return {
       name: {
@@ -13,7 +15,9 @@ const User = require("../models/user"),
     };
   };
 
+// Exported module containing user controller functions
 module.exports = {
+  // Retrieve all users
   index: (req, res, next) => {
     User.find()
       .then(users => {
@@ -25,6 +29,7 @@ module.exports = {
         next(error);
       });
   },
+  // Render view for displaying all users
   indexView: (req, res) => {
     res.render("users/index", {
       flashMessages: {
@@ -32,9 +37,11 @@ module.exports = {
       }
     });
   },
+  // Render form for creating a new user
   new: (req, res) => {
     res.render("users/new");
   },
+  // Create a new user
   create: (req, res, next) => {
     if (req.skip) next();
     let userParams = getUserParams(req.body);
@@ -52,11 +59,13 @@ module.exports = {
         next();
       });
   },
+  // Redirect to a specified path
   redirectView: (req, res, next) => {
     let redirectPath = res.locals.redirect;
     if (redirectPath) res.redirect(redirectPath);
     else next();
   },
+  // Retrieve a specific user by ID
   show: (req, res, next) => {
     let userId = req.params.id;
     User.findById(userId)
@@ -69,9 +78,11 @@ module.exports = {
         next(error);
       });
   },
+  // Render view for displaying a specific user
   showView: (req, res) => {
     res.render("users/show");
   },
+  // Render form for editing a specific user
   edit: (req, res, next) => {
     let userId = req.params.id;
     User.findById(userId)
@@ -85,6 +96,7 @@ module.exports = {
         next(error);
       });
   },
+  // Update a specific user
   update: (req, res, next) => {
     let userId = req.params.id,
       userParams = {
@@ -109,6 +121,7 @@ module.exports = {
         next(error);
       });
   },
+  // Delete a specific user
   delete: (req, res, next) => {
     let userId = req.params.id;
     User.findByIdAndRemove(userId)
@@ -121,9 +134,11 @@ module.exports = {
         next();
       });
   },
+  // Render login form
   login: (req, res) => {
     res.render("users/login");
   },
+  // Authenticate user login
   authenticate: (req, res, next) => {
     User.findOne({ email: req.body.email })
       .then(user => {
@@ -150,6 +165,7 @@ module.exports = {
         next(error);
       });
   },
+  // Validate user input
   validate: (req, res, next) => {
     req
       .sanitizeBody("email")
